@@ -450,4 +450,4 @@ async def avatar(ctx, *,  avamember : discord.Member=None):
 
 
 
-client.run("NzQ4MDU4MDgzODU4NzEwNTk4.X0X5YQ.3lKR8DrweJCx9xhF-TwmdeZ_xwk")
+client.run("")
