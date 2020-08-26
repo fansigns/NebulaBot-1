@@ -12,11 +12,6 @@ import itertools
 import math
 import random
 
-import discord
-import youtube_dl
-from async_timeout import timeout
-from discord.ext import commands
-
 from colorama import Fore, init
 from datetime import datetime
 from itertools import cycle
