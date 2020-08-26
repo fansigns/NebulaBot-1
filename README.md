@@ -1,2 +1,15 @@
-# NebulaBot
+# 📣 🔥Nebula 🔥 📣
 A discord bot in the discord.py rewrite
+
+## Things you need.
+
+Python Version 3.8, and the imports in the py
+
+## Why Does it not work?
+It does not work because you do not have the api keys for the command, or you do not have an internet connection.
+
+## Credits
+> Kodicy 
+> Charge
+> c99
+> sleek.to
