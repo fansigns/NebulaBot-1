@@ -12,6 +12,11 @@ import itertools
 import math
 import random
 
+import discord
+import youtube_dl
+from async_timeout import timeout
+from discord.ext import commands
+
 from colorama import Fore, init
 from datetime import datetime
 from itertools import cycle
@@ -55,7 +60,7 @@ async def on_ready():
 async def portscan(ctx, ipadd: str):
     await ctx.message.delete()
     print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Portscan")
-    r = requests.get(f"https://api.c99.nl/portscanner?key=08BVL-A4RSZ-OM203-0YFBK&host={ipadd}").text
+    r = requests.get(f"https://api.c99.nl/portscanner?key=&host={ipadd}").text
     embed = discord.Embed(title=f" __**Port Scan For {ipadd}**__ ", color=0xff0000)
     embed.add_field(name="Open Ports: ", value=f"{r}", inline=False)
     embed.set_thumbnail(url=f"{IconURL}")
@@ -81,7 +86,7 @@ async def whois(ctx, ip: str):
 async def resolve(ctx, HOST):
     await ctx.message.delete()
     print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Resolve")
-    r = requests.get(f"https://api.c99.nl/dnsresolver?key=08BVL-A4RSZ-OM203-0YFBK&host={HOST}").text
+    r = requests.get(f"https://api.c99.nl/dnsresolver?key=&host={HOST}").text
     embed=discord.Embed(title=f" __**IP For {HOST}**__ ", description="** **", color=0xff0000)
     embed.add_field(name=f"**{r}**", value=f"** **", inline=False)
     embed.set_thumbnail(url=f"{IconURL}")
@@ -92,7 +97,7 @@ async def resolve(ctx, HOST):
 async def ipcheck(ctx, IP):
     await ctx.message.delete()
     print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}IP Check")
-    r = requests.get(f"https://api.c99.nl/ipvalidator?key=08BVL-A4RSZ-OM203-0YFBK&ip={IP}").text
+    r = requests.get(f"https://api.c99.nl/ipvalidator?key=&ip={IP}").text
     embed=discord.Embed(title=f" __**{IP} Check**__ ", description=f"{r}", color=0xff0000)
     embed.set_thumbnail(url=f"{IconURL}")
     embed.set_footer(text=f"{Footer}")
@@ -102,7 +107,7 @@ async def ipcheck(ctx, IP):
 async def proxycheck(ctx, IP):
     await ctx.message.delete()
     print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Proxy Check")
-    r = requests.get(f"https://api.c99.nl/proxydetector?key=08BVL-A4RSZ-OM203-0YFBK&ip={IP}").text
+    r = requests.get(f"https://api.c99.nl/proxydetector?key=&ip={IP}").text
     embed=discord.Embed(title=f" __**{IP} Check**__ ", description=f"{r}", color=0xff0000)
     embed.set_thumbnail(url=f"{IconURL}")
     embed.set_footer(text=f"{Footer}")
@@ -145,7 +150,7 @@ async def admin(ctx):
 async def ip2domain(ctx, IP):
     print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}IP2Domain")
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/ip2domains?key=08BVL-A4RSZ-OM203-0YFBK&ip={IP}").text
+    r = requests.get(f"https://api.c99.nl/ip2domains?key=&ip={IP}").text
     embed=discord.Embed(title=f" __**Domains on {IP}**__ ", description=f"{r}", color=0xff0000)
     await ctx.send(embed=embed)
 
@@ -153,7 +158,7 @@ async def ip2domain(ctx, IP):
 async def webss(ctx, URL):
     print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}WebSS")
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/createscreenshot?key=08BVL-A4RSZ-OM203-0YFBK&url={URL}").text
+    r = requests.get(f"https://api.c99.nl/createscreenshot?key=&url={URL}").text
     embed=discord.Embed(title=f" __**{URL} Screenshot**__ ", description=f"{r}", color=0xff0000)
     await ctx.send(embed=embed)
 
@@ -201,7 +206,7 @@ async def say(ctx,*, message):
 async def spanish(ctx,*, text):
     print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}Spanish")
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/translate?key=08BVL-A4RSZ-OM203-0YFBK&text={text}&tolanguage=ES").text
+    r = requests.get(f"https://api.c99.nl/translate?key=&text={text}&tolanguage=ES").text
     embed = discord.Embed(title="__**Spanish Text**__", description=f"**{r}**", color=0xff0000)
     await ctx.send(embed=embed)
 
@@ -209,7 +214,7 @@ async def spanish(ctx,*, text):
 async def russian(ctx,*, text):
     print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}Russian")
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/translate?key=08BVL-A4RSZ-OM203-0YFBK&text={text}&tolanguage=ru").text
+    r = requests.get(f"https://api.c99.nl/translate?key=&text={text}&tolanguage=ru").text
     embed = discord.Embed(title="__**Russian Text**__", description=f"**{r}**", color=0xff0000)
     await ctx.send(embed=embed)
 
