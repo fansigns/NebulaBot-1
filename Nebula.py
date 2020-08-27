@@ -12,6 +12,11 @@ import itertools
 import math
 import random
 
+import discord
+import youtube_dl
+from async_timeout import timeout
+from discord.ext import commands
+
 from colorama import Fore, init
 from datetime import datetime
 from itertools import cycle
@@ -50,6 +55,14 @@ async def on_ready():
     {Fore.WHITE}[{Fore.GREEN}Info{Fore.WHITE}] Logged in!
       '''+Fore.RESET)
 
+@client.command()
+async def webss(ctx, URL):
+    print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Web Screenshot")
+    await ctx.message.delete()
+    r = requests.get(f"https://api.c99.nl/createscreenshot?key=&url={URL}").text
+    embed=discord.Embed(title=f" __**{URL} Screenshot**__ ", description=f"{r}", color=0xfa1e2e)
+    await ctx.send(embed=embed)
+
 
 @client.command()
 async def portscan(ctx, ipadd: str):
@@ -58,14 +71,22 @@ async def portscan(ctx, ipadd: str):
     r = requests.get(f"https://api.c99.nl/portscanner?key=&host={ipadd}").text
     embed = discord.Embed(title=f" __**Port Scan For {ipadd}**__ ", color=0xff0000)
     embed.add_field(name="Open Ports: ", value=f"{r}", inline=False)
-    embed.set_thumbnail(url=f"{IconURL}")
+    await ctx.send(embed=embed)
+
+@client.command()
+async def subscan(ctx, domain: str):
+    await ctx.message.delete()
+    print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}SubScan")
+    r = requests.get(f"https://api.c99.nl/subdomainfinder?key=&domain={domain}").text
+    embed = discord.Embed(title=f" __**Subdomain Scan For {domain}**__ ", color=0xff0000)
+    embed.add_field(name="Sub Domains ", value=f"{r}", inline=False)
     embed.set_footer(text=f"{Footer}")
     await ctx.send(embed=embed)
 
 @client.command()
-async def whois(ctx, ip: str):
+async def geoip(ctx, ip: str):
     await ctx.message.delete()
-    print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Whois")
+    print(f"{Back.BLACK}{Fore.WHITE}                    [{Fore.RED}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.RED}Geo Ip")
     r = requests.get(url=f"http://api.ipstack.com/{ip}?access_key=54082d4a5c4de095265ba3185db4c1f4")
     if r.status_code == 200:
         if(r.json()['type'] == None):
@@ -111,20 +132,27 @@ async def proxycheck(ctx, IP):
 
 @client.command()
 async def help(ctx):
-    embed=discord.Embed(title=f"**Commands**", description=f"\n **fun** | Shows all Fun Commands\n **admin** | Shows All Admin Commands\n **text** | Shows all Text Commands\n **bot** | All the needed bot info\n **iptools** | Shows all IP Tools\n", color=0xff0000)
+    embed=discord.Embed(title=f"**Commands**", description=f"\n **fun** |  `Shows all Fun Commands`\n **admin** | `Shows All Admin Commands`\n **text** | `Shows all Text Commands`\n **bot** | `All the needed bot info`\n **iptools** | `Shows all IP Tools`\n", color=0xff0000)
     embed.set_footer(text='Nebula')
     await ctx.send(embed=embed)
 
 @client.command()
+async def tools(ctx):
+    embed=discord.Embed(title=f"**Tools**", description=f"\n**phonelookup** | `Looks up phone number for info`\n", color=0xff0000)
+    embed.set_footer(text=f"{Footer}")
+    await ctx.send(embed=embed)
+
+
+@client.command()
 async def iptools(ctx):
     await ctx.message.delete()
-    embed=discord.Embed(title=f" __**IP Tools**__ ", description=f"{prefix}portscan [ip] | **Portscan all open ports on an ip**\n {prefix}whois [ip] | **Whois looks up an IP**\n {prefix}resolve [url] | **Gets the IP Address of a website**\n{prefix}ipcheck [ip] | **See if an IP is valid or not**\n {prefix}proxycheck [ip] | **See if an IP is a proxy or not**\n ", color=0xff0000)
+    embed=discord.Embed(title=f" __**IP Tools**__ ", description=f"{prefix}**portscan [ip]** | `Portscan all open ports on an ip`\n {prefix}**geoip [ip]** | `GeoIP looks up an IP`\n {prefix}**resolve [url]** | `Gets the IP Address of a website`\n{prefix}**ipcheck [ip]** | `See if an IP is valid or not`\n {prefix}**proxycheck [ip]** | `See if an IP is a proxy or not`\n", color=0xff0000)
     await ctx.send(embed=embed)
 
 
 @client.command()
 async def fun(ctx):
-    embed=discord.Embed(title=f"**Fun Commands**", description=f"**joke** | Says a joke\n **supreme** | Does a supreme logo of what you said\n **_8ball** | Shakes and 8ball\n **wyr** | Would You Rather\n **dick** | Shows the size of your dick\n **fml** | Send a Fuck My life moment\n", color=0xff0000)    
+    embed=discord.Embed(title=f"**Fun Commands**", description=f"{prefix}**joke** | `Says a joke`\n {prefix}**supreme** | `Does a supreme logo of what you said`\n {prefix}**_8ball** | `Shakes and 8ball`\n {prefix}**wyr** | `Would You Rather`\n {prefix}**dick** | `Shows the size of your dick`\n {prefix}**fml** | `Send a Fuck My life moment`\n", color=0xff0000)    
     embed.set_footer(text='Nebula')
     await ctx.send(embed=embed)
 
@@ -133,6 +161,18 @@ async def text(ctx):
     embed=discord.Embed(title=f"**Text Commands**\n", description=f"**embed** | Embeds given message\n **say** | Says what you did\n")
     embed.set_footer(text='Nebula')
     await ctx.send(embed=embed)
+
+@client.command(pass_context=True)
+@commands.has_permissions(administrator=True)
+async def clean(ctx, limit: int, *, user: discord.Member = None):
+        await ctx.channel.purge(limit=limit)
+        await ctx.send('Cleared by {}'.format(ctx.author.mention))
+        await ctx.message.delete()
+
+@clean.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("You cant do that!")
 
 @client.command()
 async def admin(ctx):
@@ -150,11 +190,11 @@ async def ip2domain(ctx, IP):
     await ctx.send(embed=embed)
 
 @client.command()
-async def webss(ctx, URL):
-    print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}WebSS")
+async def phonelookup(ctx, phone):
+    print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}Phone Lookup")
     await ctx.message.delete()
-    r = requests.get(f"https://api.c99.nl/createscreenshot?key=&url={URL}").text
-    embed=discord.Embed(title=f" __**{URL} Screenshot**__ ", description=f"{r}", color=0xff0000)
+    r = requests.get(f"https://api.c99.nl/phonelookup?key=&number={phone}").text
+    embed=discord.Embed(title=f" __**Info On {phone}**__ ", description=f"{r}", color=0xff0000)
     await ctx.send(embed=embed)
 
 @client.command()
@@ -342,7 +382,7 @@ async def dick(ctx, *, user: discord.Member = None):
     em = discord.Embed(title=f"{user}'s Dick size", description=f"8{dong}D", color=0xff0000)
     await ctx.send(embed=em)
 
-@client.command(aliases=["uinfo"])
+@client.command(aliases=["whois"])
 async def userinfo(ctx, member: discord.Member = None):
     if not member:  # if member is no mentioned
         member = ctx.message.author  # set member as the author
@@ -404,24 +444,6 @@ async def bans(ctx):
     em. color=0xff0000
     await ctx.send(embed=em)
 
-@client.command(pass_context = True)
-@commands.has_role('Admin')
-async def mute(ctx, member: discord.Member):
-    print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}Mute")
-    await ctx.message.delete()
-    role = discord.utils.get(member.server.roles, name='Muted')
-    await client.add_roles(member, role)
-    embed=discord.Embed(title="User Muted!".format(member, ctx.message.author))
-    await client.say(embed=embed)
-
-@client.command()
-@commands.has_role('Admin')
-async def clear(ctx, amount=3):
-    print(f"{Back.BLACK}{Fore.WHITE}[{Fore.GREEN}{current_time}{Fore.WHITE}] {Fore.WHITE}Command Used {Fore.WHITE}- {Fore.GREEN}Clear")
-    await ctx.message.delete()
-    await ctx.channel.purge(limit=amount +1)
-    embed=discord.Embed(title=f"Clearing {amount} messages!")
-    await ctx.send(embed=embed)
 
 @client.command()
 @commands.has_role('Admin')
