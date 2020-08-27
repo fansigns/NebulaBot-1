@@ -10,7 +10,6 @@ import asyncio
 import functools
 import itertools
 import math
-import random
 
 from colorama import Fore, init
 from datetime import datetime
