@@ -9,7 +9,7 @@ Python Version 3.8, and the imports in the py
 It does not work because you do not have the api keys for the command, or you do not have an internet connection.
 
 ## Credits
-> Kodicy,
+> Tabs,
 > Charge,
 > C99.nl
 
